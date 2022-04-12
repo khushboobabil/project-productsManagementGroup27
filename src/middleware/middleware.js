@@ -1,26 +1,28 @@
 const jwt = require('jsonwebtoken')
-const bookModel = require("../models/bookModels")
+const userModel = require("../models/userModel")
 
 
 //Authentication................................................................
 
 const authentication = function (req, res, next) {
     try {
-        const token = req.headers["x-api-key"]
+        const token = req.headers["authorization"]
         if (!token) {
             return res.status(400).send({ status: false, message: "token must be present" });
         }
-        const decodedToken = jwt.verify(token, "Book_Management_Key");
+        const bearer=token.split(' ')
+        const bearerToken=bearer[1]
+        const decodedToken = jwt.verify(bearerToken, "Secret-Key");
 
         if (!decodedToken) {
-            return res.status(401).send({ status: false, message: "token is invalid" });
+            return res.status(400).send({ status: false, message: "token is invalid" });
         }
-
+        //req.decodedToken=decodedToken
         next();
     }
     catch (err) {
         console.log(err)
-        res.status(500).send({ msg: err.message })
+        return res.status(500).send({ msg: err.message })
     }
 
 }
@@ -31,31 +33,33 @@ const authentication = function (req, res, next) {
 let authorization = async function (req, res, next) {
 
     try {
-        let token = req.headers["x-api-key"]
+        let token = req.headers["authorization"]
         if (!token) { return res.status(400).send({ status: false, message: "token must be present" }) }
 
-        let decodedToken = jwt.verify(token, "Book_Management_Key")
+        const bearer=token.split(' ')
+        const bearerToken=bearer[1]
+        const decodedToken = jwt.verify(bearerToken, "Secret-Key");
 
         if (!decodedToken) {
-            return res.status(401).send({ status: false, msg: "token is invalid" });
+            return res.status(400).send({ status: false, message: "token is invalid" });
         }
 
         let decodedUserId = decodedToken.userId
-        let bookIdParams = req.params.bookId
+        let userIdParams = req.params.userId
 
-        let bookDetailsId = await bookModel.findOne({ _id: bookIdParams, isDeleted: false })
-        if (!bookDetailsId) {
+        let userDetailsId = await userModel.findById({ _id: userIdParams })
+        if (!userDetailsId) {
             return res.status(401).send({ status: false, msg: "no data found with this Id" });
         }
 
-        let bookUserId = bookDetailsId.userId
+        let checkUserId = userDetailsId._id
 
-        if (decodedUserId != bookUserId) { return res.status(403).send({ status: false, message: "You are not an authorized person to make these changes" }) }
+        if (decodedUserId != checkUserId) { return res.status(403).send({ status: false, message: "You are not an authorized person to make these changes" }) }
         next()
     }
     catch (error) {
         console.log(error)
-        res.status(500).send({ msg: error.message })
+        return res.status(500).send({ msg: error.message })
     }
 }
 
