@@ -145,7 +145,7 @@ const filterProducts = async (req, res) => {
        {
            return res.status(404).send({status:false,message:"data not found"})
        }
-       return res.status(200).send({status:false,data:findPrice})
+       return res.status(200).send({status:true,data:findPrice})
     }
     if(sortPrice==-1){
         let findPrice=await productModel.find(filter).sort({price:-1})
@@ -153,7 +153,7 @@ const filterProducts = async (req, res) => {
         {
             return res.status(404).send({status:false,message:"data not found"})
         }
-        return res.status(200).send({status:false,data:findPrice})
+        return res.status(200).send({status:true,data:findPrice})
      }
  
      let findPrice=await productModel.find(filter)
@@ -161,7 +161,7 @@ const filterProducts = async (req, res) => {
         {
             return res.status(404).send({status:false,message:"data not found"})
         }
-        return res.status(200).send({status:false,data:findPrice})
+        return res.status(200).send({status:true,data:findPrice})
     
     }
     catch(error){
