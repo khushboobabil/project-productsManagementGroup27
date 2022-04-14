@@ -14,11 +14,13 @@ router.post("/login", userController.login);
 
 router.get("/user/:userId/profile", middleware.authentication, userController.getUser);
 
-router.put("/user/:userId/profile", middleware.authentication, middleware.authorization, userController.updateUser);
+router.put("/user/:userId/profile", middleware.authentication, middleware.authorization, userController.updateUserProfile);
 
 //product...........................................
 
 router.post("/products", productController.createProduct);
+
+router.get("/products", productController.filterProducts);
 
 router.get("/products/:productId", productController.getProduct);
 

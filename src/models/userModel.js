@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      match:[/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}$/,'Please enter valid Password'],
+   //   match:[/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}$/,'Please enter valid Password'],
       trim: true
     },
     address: {
@@ -83,22 +83,3 @@ const userSchema = new mongoose.Schema(
 
 module.exports = mongoose.model("users", userSchema);
 
-// { 
-//   fname: {string, mandatory},
-//   lname: {string, mandatory},
-//   email: {string, mandatory, valid email, unique},
-//   profileImage: {string, mandatory}, // s3 link
-//   phone: {string, mandatory, unique, valid Indian mobile number}, 
-//   password: {string, mandatory, minLen 8, maxLen 15}, // encrypted password
-//   address: {
-//     shipping: {
-//       street: {string, mandatory},
-//       city: {string, mandatory},
-//       pincode: {number, mandatory}
-//     },
-//     billing: {
-//       street: {string, mandatory},
-//       city: {string, mandatory},
-//       pincode: {number, mandatory}
-//     }
-//   },
