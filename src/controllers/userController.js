@@ -64,8 +64,8 @@ const createUser = async function (req, res) {
 
     if (!(Object.keys(data).length > 0)) { return res.status(400).send({ status: false, message: "Invalid request Please provide details of an user" }) }
 
-    var { fname, lname, email, phone, password } = data;
-
+   
+ var { fname, lname, email, phone, password } = data;
     if (!isValid(fname)) { return res.status(400).send({ status: false, message: "please provide first name" }) }
 
     if (!isValid(lname)) { return res.status(400).send({ status: false, message: "please provide first name" }) }
