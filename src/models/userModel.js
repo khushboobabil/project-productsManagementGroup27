@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-   //   match:[/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}$/,'Please enter valid Password'],
+      //match:[/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,15}$/,'Please enter valid Password'],
       trim: true
     },
     address: {
@@ -82,4 +82,3 @@ const userSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model("users", userSchema);
-

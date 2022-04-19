@@ -1,42 +1,48 @@
 const express = require('express');
 const router = express.Router();
-const userController = require("../controllers/userController")
-const cartController = require("../controllers/cartController")
-const productController = require("../controllers/productController")
-const middleware = require("../middleware/middleware")
+const userController=require("../controllers/userController")
+const productController=require("../controllers/productController")
+const cartController=require("../controllers/cartController")
+const orderController=require("../controllers/orderController")
+const auth=require("../middleware/auth.js")
 
 
+//******************* User APIs ******************************************
+router.post("/register",userController.createUser)
 
-//users..............................................
+router.post("/login",userController.login)
 
-router.post("/register", userController.createUser);
+router.get("/user/:userId/profile",auth.userAuth,userController.getUser)
 
-router.post("/login", userController.login);
+router.put("/user/:userId/profile",auth.userAuth,userController.updateUser)
 
-router.get("/user/:userId/profile", middleware.authentication, userController.getUser);
 
-router.put("/user/:userId/profile", middleware.authentication, middleware.authorization, userController.updateUserProfile);
+//********************* Product APIs *************************************
 
-//product...........................................
+router.post("/products",productController.createProduct)
 
-router.post("/products", productController.createProduct);
+router.get("/products",productController.getProduct)
 
-router.get("/products", productController.filterProducts);
+router.get("/products/:productId",productController.getProductbyId)
 
-router.get("/products/:productId", productController.getProduct);
+router.put("/products/:productId",productController.updateProduct)
 
-router.put("/products/:productId", productController.updateProduct);
+router.delete("/products/:productId",productController.deleteProduct)
 
-router.delete("/products/:productId", productController.deleteProduct);
+//************************* Cart APIs *************************************
 
-//Cart..................................................
+router.post("/users/:userId/cart",auth.userAuth,cartController.createCart)
 
-router.post("/users/:userId/cart", middleware.authentication, middleware.authorization, cartController.addtocart);
+router.get("/users/:userId/cart",auth.userAuth,cartController.getCart)
 
-router.put("/users/:userId/cart", middleware.authentication, middleware.authorization, cartController.updateCart);
+router.put("/users/:userId/cart",auth.userAuth,cartController.updateCart)
 
-router.get("/users/:userId/cart", middleware.authentication, middleware.authorization, cartController.getCart);
+router.delete("/users/:userId/cart",auth.userAuth,cartController.deleteCart)
 
-router.delete("/users/:userId/cart", middleware.authentication, middleware.authorization, cartController.deleteCart);
+//******************************** Order APIs ****************************
+
+router.post("/users/:userId/orders",auth.userAuth,orderController.createOrder)
+
+router.put("/users/:userId/orders",auth.userAuth,orderController.updateOrder)
 
 module.exports = router;

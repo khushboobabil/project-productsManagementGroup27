@@ -46,23 +46,18 @@ const productSchema = new mongoose.Schema({
         enum: ["S", "XS", "M", "X", "L", "XXL", "XL"]
     },
     installments: {
-        type: Number,
-        required:true,
-        default:0
+        type: Number
     },
     deletedAt: {
-        type: Date
+        type: Date,
+        default:null
     },
      isDeleted: {
         type: Boolean,
         default: false,
 
     }
-
-
 },
-
     { timestamps: true })
 
 module.exports = mongoose.model('products', productSchema)
-
