@@ -50,10 +50,20 @@ const isValidObjectId = function (objectId) {
     return mongoose.Types.ObjectId.isValid(objectId)
 }
 
-const isValidSize = function (input) {
-    return ["S", "XS","M","X", "L","XXL", "XL"].indexOf(input) !== -1; //enum validation
-};
+// const isValidSize = function (input) {
+//     return ["S", "XS","M","X", "L","XXL", "XL"].indexOf(input) !== -1; //enum validation
+// };
 
+const validForEnum = function (value) {
+    let enumValue = ["S", "XS", "M", "X", "L", "XXL", "XL"]
+    value = JSON.parse(value)
+    for (let x of value) {
+        if (enumValue.includes(x) == false) {
+            return false
+        }
+    }
+    return true;
+}
 const validInstallment = function isInteger(value) {
     if (value < 0) return false
     if (value % 1 == 0) return true;
@@ -63,79 +73,75 @@ const validInstallment = function isInteger(value) {
 const isValidDetails = function (requestBody) {
     return Object.keys(requestBody).length > 0;
 };
-// create review.....................................................................
-const createProduct = async function (req, res) { 
+
+
+
+
+
+
+const createProduct = async function (req, res) {
     try {
-        let data = req.body;
-        if (!(Object.keys(data).length > 0)) {
-            return res.status(400).send({ status: false, message: "Invalid request Please provide details of an user" });
-        }
+        let data = req.body
+        let files = req.files
+      
+if(Object.keys(data).length ==0){return res.status(400).send({status:false, msg: "please input some data"})}
 
-        const { title, description, price, currencyId, currencyFormat, productImage, style, availableSizes,installments} = data;
-        
-        
-        
-        if (!isValid(title)) {
-            return res.status(400).send({ status: false, message: "please provide title" });
-        }
-
-        let duplicateTitle = await productModel.findOne({ title: title })
-          if (duplicateTitle) {
-              return res.status(400).send({ status: false, message: `Title Already Exist` });
-          }
+       
+        const { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments } = data
 
 
-        if (!isValid(description)) {
-            return res.status(400).send({ status: false, message: "please provide description" });
-        }
 
-        if (!isValid(price)) {
-            return res.status(400).send({ status: false, message: "price is required" });
-        }
+//     title validation
 
-        // if (!productImage) {
-        //     return res.status(400).send({ status: false, message: "ProductImage is required" });
-        // }
+       if(!title){return res.status(400).send({status:false, msg:"title required"})}
+
+        if(!isValid(title)){return res.status(400).send({status:false, msg:"title required"})}
+
+       let duplicateTitle = await productModel.findOne({title:title})
+
+       if(duplicateTitle){
+           return res.status(400).send({status:false, msg: "title already exist in use"})}
+
+// description validation
+       
+    if(!description){return res.status(400).send({status:false, msg:"description required"})}
+
+    if(!isValid(description)){return res.status(400).send({status:false, msg:"description required"})}
 
 
-        // if(!currencyId)
-        //  return res.status(400).send({status:false,msg:'enter the currecy Id'})
+    if(!price){return res.status(400).send({status:false, msg: "price required"})}
 
-        if(!isValid(currencyId)) 
-        return res.status(400).send({Status:false,msg:"currency Id is not valid"})
+    if(!currencyId){return res.status(400).send({status:false, msg: "currencyId required"})}
 
-        // if (currencyId != "INR") {
-        //     return res.status(400).send({ status: false, message: "currencyId should be INR" })
-        // }
+    if(!currencyFormat){return res.status(400).send({status:false, msg: "currency format required"})}
 
-        if (!isValid(currencyFormat)) {
-            return res.status(400).send({ status: false, message: "please provide currencyFormat" });
-        }
+    if(!validForEnum(availableSizes)){return res.status(400).send({status:false, msg: "please choose the size from the available sizes"})}
 
-        if(installments){
-            if (!validInstallment(installments)) {
-                return res.status(400).send({ status: false, message: "installments can not be a decimal number " })
-            }
-        }
-        if (!isValidSize(availableSizes)) {
-                 return res.status(400).send({ status: false, message: "Please provide valid size." }); //Enum is mandory
-               }
+    if(currencyId != "INR"){return res.status(400).send({status:false, msg: "only indian currencyId INR accepted"})}
 
-        //currencyFormat = currencySymbol('INR')
-        
-                let files = req.files 
-   
-    if (files && files.length > 0) {
-        let productImage = await uploadFile(files[0])    
+    if(currencyFormat != "₹"){return res.status(400).send({status:false, msg: "only indian currency ₹ accepted "})}
 
-        let savedData = await productModel.create({ title, description, price, currencyId, currencyFormat, productImage, style, availableSizes});
 
-        return res.status(201).send({ status: true, data: savedData });
+    if (files.length > 0) {
+      var  profileImagessweetselfie = await uploadFile(files[0])
     }
-    } catch (error) {
-        return res.status(500).send({ status: false, message: error.message });
+
+        data.productImage = profileImagessweetselfie
+
+       data.availableSizes = JSON.parse(availableSizes)
+
+        if(!data.productImage){return res.status(400).send({status:false, msg: "productImage required"})}
+
+        const created = await productModel.create(data)
+
+        return res.status(201).send({ status: true, data: created })
     }
-};
+    catch (err) {
+        console.log(err)
+        return res.status(500).send({ status: false, msg: err.message })
+    }
+}
+
 
 
 //get Product................................................
@@ -181,7 +187,7 @@ const getProduct = async function (req, res) {
         {
           filter["price"]={$gt:priceGreaterThan,$lt:priceLessThan}
         }
-        
+        //decending( high to low)
         if(sortPrice==1){
            let findPrice=await productModel.find(filter).sort({price:1})
            if(findPrice.length==0)
@@ -190,6 +196,8 @@ const getProduct = async function (req, res) {
            }
            return res.status(200).send({status:true,data:findPrice})
         }
+
+        //ascending( low to high)
         if(sortPrice==-1){
             let findPrice=await productModel.find(filter).sort({price:-1})
             if(findPrice.length==0)
@@ -199,12 +207,12 @@ const getProduct = async function (req, res) {
             return res.status(200).send({status:true,data:findPrice})
          }
      
-         let findPrice=await productModel.find(filter)
-            if(findPrice.length==0)
-            {
-                return res.status(404).send({status:false,message:"data not found"})
-            }
-            return res.status(200).send({status:true,data:findPrice})
+        //  let findPrice=await productModel.find(filter)
+        //     if(findPrice.length==0)
+        //     {
+        //         return res.status(404).send({status:false,message:"data not found"})
+        //     }
+        //     return res.status(200).send({status:true,data:findPrice})
         
         }
         catch(error){
@@ -212,6 +220,8 @@ const getProduct = async function (req, res) {
         }
     }
 
+
+    //get product by Id.......................................................
 const getProductbyId = async function (req, res) {
     try{
         const productId = req.params.productId
@@ -290,7 +300,9 @@ const updateProduct = async function (req, res) {
             dataObject['productImage'] = uploadFileUrl
         }
   
-
+        if (isValid(availableSizes))  {
+            dataObject['availableSizes'] = availableSizes.trim()
+        }
         let updatedProduct = await productModel.findOneAndUpdate({_id:productId},
              dataObject,
             { new: true })
