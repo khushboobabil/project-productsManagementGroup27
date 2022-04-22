@@ -1,13 +1,12 @@
 const userModel = require("../models/userModel")
 const jwt = require("jsonwebtoken")
-const awsdk = require("aws-sdk")
 const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
 const aws = require ("../aws/aws.js")
 
 
 
-//validation
+//validation....................................................................
 const isValid = function(value){
   if(typeof value ==undefined ||  value ==null)return false
   if(typeof value==='string'&&value.trim().length===0) return false
@@ -218,7 +217,7 @@ const getUser = async function (req, res) {
 const updateUser = async function(req, res) {
 
   let data = req.body;
-  const userId = req.params.userId
+  //const userId = req.params.userId
   const userIdFromParams = req.params.userId
   const userIdFromToken = req.userId
 

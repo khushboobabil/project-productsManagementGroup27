@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-//const ObjectId = mongoose.Schema.Types.ObjectId
+
 
 const productSchema = new mongoose.Schema({
 
@@ -7,54 +7,66 @@ const productSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        trim: true
     },
     description: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     price: {
         type: Number,
         required: true,
+        trim: true
        // match:,
     },
     currencyId: {
         type: String,
         required: true,
+        trim: true
         //INR:,
     },
     currencyFormat: {
         type: String,
         required: true,
-       // RupeeSymbol:,
+        trim: true
+       // RupeeSymbol,
     },
 
     isFreeShipping: {
         type: Boolean,
-        default: false
+        default: false,
+        trim: true
     },
     productImage: {
         type: String,
-        required: true
+        required: true,
+        trim: true
     },
     style: {
-        type: String
+        type: String,
+        trim: true
     },
 
     availableSizes: {
         type: [String],
-        enum: ["S", "XS", "M", "X", "L", "XXL", "XL"]
+        enum: ["S", "XS", "M", "X", "L", "XXL", "XL"],
+        trim: true
     },
     installments: {
-        type: Number
+        type: Number,
+        trim: true
     },
     deletedAt: {
         type: Date,
-        default:null
+        default:null,
+        trim: true
     },
      isDeleted: {
         type: Boolean,
         default: false,
+        trim: true
 
     }
 },

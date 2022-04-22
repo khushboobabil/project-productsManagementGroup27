@@ -3,6 +3,8 @@ const productModel = require("../models/productModel")
 const userModel = require("../models/userModel")
 const jwt = require("jsonwebtoken")
 const mongoose = require("mongoose")
+
+//validation
 const isValid = function (value) {
     if (typeof value == undefined || value == null) return false
     if (typeof value === 'string' && value.trim().length === 0) return false
@@ -10,7 +12,7 @@ const isValid = function (value) {
     return true
   }
 
-const isValidObjId=/^[0-9a-fA-F]{24}$/
+//const isValidObjId=/^[0-9a-fA-F]{24}$/
 
 const isValidObjectId = function(ObjectId) {
   return mongoose.Types.ObjectId.isValid(ObjectId)
@@ -23,11 +25,7 @@ const createCart = async(req, res)=>{
       const userIdbyParams=req.params.userId
       let {userId, productId, cartId} = data
 
-      // if (!isValidObjId.test(userId)) {
-      //     return res
-      //       .status(400)
-      //       .send({ status: false, message: "please provide valid UserId" });
-      //   }
+    
       if (!isValid(userId)) {
           res.status(400).send({ status: false, message: 'please provide userId' })
           return
@@ -302,7 +300,7 @@ const deleteCart = async function (req, res) {
           return res.status(403).send({status: false,message: "Unauthorized access.",});
       }
 
-        const findCartById = await cartModel.findOne({ userId: userIdFromParams})//.select({"items[0].productId":1,_id:1})
+        const findCartById = await cartModel.findOne({ userId: userIdFromParams})
 
         if (!findCartById) {
             return res.status(404).send({ status: false, message: "No cart Available,Already deleted" })

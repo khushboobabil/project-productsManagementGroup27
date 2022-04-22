@@ -50,10 +50,6 @@ const isValidObjectId = function (objectId) {
     return mongoose.Types.ObjectId.isValid(objectId)
 }
 
-// const isValidSize = function (input) {
-//     return ["S", "XS","M","X", "L","XXL", "XL"].indexOf(input) !== -1; //enum validation
-// };
-
 const validForEnum = function (value) {
     let enumValue = ["S", "XS", "M", "X", "L", "XXL", "XL"]
     value = JSON.parse(value)
@@ -207,12 +203,12 @@ const getProduct = async function (req, res) {
             return res.status(200).send({status:true,data:findPrice})
          }
      
-        //  let findPrice=await productModel.find(filter)
-        //     if(findPrice.length==0)
-        //     {
-        //         return res.status(404).send({status:false,message:"data not found"})
-        //     }
-        //     return res.status(200).send({status:true,data:findPrice})
+         let findPrice=await productModel.find(filter)
+            if(findPrice.length==0)
+            {
+                return res.status(404).send({status:false,message:"data not found"})
+            }
+            return res.status(200).send({status:true,data:findPrice})
         
         }
         catch(error){
@@ -300,8 +296,9 @@ const updateProduct = async function (req, res) {
             dataObject['productImage'] = uploadFileUrl
         }
   
-        if (isValid(availableSizes))  {
-            dataObject['availableSizes'] = availableSizes.trim()
+        if (validForEnum(availableSizes))  {
+            data.availableSizes = JSON.parse(availableSizes)
+            dataObject['availableSizes'] = data.availableSizes
         }
         let updatedProduct = await productModel.findOneAndUpdate({_id:productId},
              dataObject,
