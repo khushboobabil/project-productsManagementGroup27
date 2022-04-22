@@ -12,12 +12,12 @@ const isValid = function (value) {
     return true
   }
 
-//const isValidObjId=/^[0-9a-fA-F]{24}$/
 
 const isValidObjectId = function(ObjectId) {
   return mongoose.Types.ObjectId.isValid(ObjectId)
 }
 
+//create cart or add product to existing cart...................................
 
 const createCart = async(req, res)=>{
   try {
@@ -55,7 +55,7 @@ const createCart = async(req, res)=>{
             return res.status(400).send({ status: false, message: "cartId could not be blank" });
           }
 
-          if (!isValidObjId.test(cartId)) {
+          if (!isValidObjectId(cartId)) {
               return res.status(400).send({ status: false, message: "cartId  is not valid" });
             }
 
@@ -133,10 +133,11 @@ const createCart = async(req, res)=>{
       }
 
        catch (err) {
-      res.status(500).send({status:false, message:err.message})
+       return res.status(500).send({status:false, message:err.message})
   }
 }
 
+//get cart for user..............................................................
 
 const getCart = async function (req, res) {
   try{
@@ -177,6 +178,7 @@ catch(error){
 }
 }
 
+//upadate cart................................................................
 
 const updateCart = async function (req, res) {
   try {
@@ -185,7 +187,7 @@ const updateCart = async function (req, res) {
     let userIdFromToken = req.userId;
 
     //validation starts.
-    if (!isValidObjId.test(userId)) {
+    if (!isValidObjectId(userId)) {
         return res.status(400).send({ status: false, message: "Invalid userId in body" })
     }
 
@@ -202,12 +204,9 @@ const updateCart = async function (req, res) {
 
     //Extract body
     const { cartId, productId, removeProduct } = requestBody
-    // if (!validator.isValidRequestBody(requestBody)) {
-    //     return res.status(400).send({ status: false, message: 'Invalid request parameters. Please provide cart details.' })
-    // }
-
+    
     //cart validation
-    if (!isValidObjId.test(cartId)) {
+    if (!isValidObjectId(cartId)) {
         return res.status(400).send({ status: false, message: "Invalid cartId in body" })
     }
     let findCart = await cartModel.findById({ _id: cartId })
@@ -216,7 +215,7 @@ const updateCart = async function (req, res) {
     }
 
     //product validation
-    if (!isValidObjId.test(productId)) {
+    if (!isValidObjectId(productId)) {
         return res.status(400).send({ status: false, message: "Invalid productId in body" })
     }
     let findProduct = await productModel.findOne({ _id: productId, isDeleted: false })
@@ -281,6 +280,9 @@ catch (error) {
   return res.status(500).send({ status: false, message: error.message })
 }
 }
+
+//delete cart..........................................................
+
 const deleteCart = async function (req, res) {
     try {
         //let userId = req.params.userId
@@ -313,7 +315,7 @@ const deleteCart = async function (req, res) {
 
             await cartModel.findOne({ userId: userIdFromParams })
 
-        return res.status(200).send({ status: true, message: "Product deleted successfullly.",data:deleteProductData })
+        return res.status(200).send({ status: true, message: "cart deleted successfullly.",data:deleteProductData })
 
         
     }catch (error) {

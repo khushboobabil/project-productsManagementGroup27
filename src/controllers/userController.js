@@ -217,7 +217,7 @@ const getUser = async function (req, res) {
 const updateUser = async function(req, res) {
 
   let data = req.body;
-  //const userId = req.params.userId
+  const userId = req.params.userId
   const userIdFromParams = req.params.userId
   const userIdFromToken = req.userId
 

@@ -183,7 +183,30 @@ const getProduct = async function (req, res) {
         {
           filter["price"]={$gt:priceGreaterThan,$lt:priceLessThan}
         }
-        //decending( high to low)
+        if(size) {
+
+            const searchSize = await productModel.find({availableSizes: size, isDeleted: false}).sort({price: sortPrice})
+
+            if(searchSize.length !== 0) {
+                return res.status(200).send({ status: true, message: 'Success', data: searchSize})
+            }
+            else {
+                return res.status(404).send({status: false, message: `product not found with this ${size}`})
+            }
+        }
+
+        if(name) {
+            const searchName = await productModel.find({title: {$regex: name}, isDeleted: false}).sort({price: priceSort})
+
+            if(searchName.length !== 0) {
+                return res.status(200).send({status: true, message: 'Success', data: searchName})
+            }
+            else {
+                return res.status(404).send({status: false, message: `product not found with this ${name}`})
+            }
+        }
+
+        //ascending(low to high)
         if(sortPrice==1){
            let findPrice=await productModel.find(filter).sort({price:1})
            if(findPrice.length==0)
@@ -193,7 +216,7 @@ const getProduct = async function (req, res) {
            return res.status(200).send({status:true,data:findPrice})
         }
 
-        //ascending( low to high)
+        //descending(high to low)
         if(sortPrice==-1){
             let findPrice=await productModel.find(filter).sort({price:-1})
             if(findPrice.length==0)
