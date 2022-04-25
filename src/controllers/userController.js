@@ -189,7 +189,7 @@ const login = async function(req, res) {
 const getUser = async function (req, res) {
 
   try {
-    //const userId = req.params.userId
+  
     const userIdFromParams = req.params.userId;
     const userIdFromToken = req.userId
     
@@ -217,7 +217,7 @@ const getUser = async function (req, res) {
 const updateUser = async function(req, res) {
 
   let data = req.body;
-  const userId = req.params.userId
+  
   const userIdFromParams = req.params.userId
   const userIdFromToken = req.userId
 
@@ -366,7 +366,7 @@ const updateUser = async function(req, res) {
 
   //=========================================update data=============================
 
-  const updatedUser = await userModel.findOneAndUpdate({ _id: userId }, updatedData, { new: true })
+  const updatedUser = await userModel.findOneAndUpdate({ _id: userIdFromParams }, updatedData, { new: true })
 
   return res.status(200).send({ status: true, message: "User profile updated", data: updatedUser });
 
